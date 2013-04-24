@@ -296,6 +296,67 @@ def generate_response(trip_dict, trip_hours, link_trip_dict):
     response += '</div>'
     return response
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# generate_response2 is different in that it was written for version 2 of the application
+# it employs trip values in order to achieve the functionality I am adding that will allow
+# users to book trips on my app, without ever touching megabus's website
+
+
+def generate_response2(trip_dict, trip_hours, link_trip_dict):
+    response = ''
+    response += '<div>'
+    #trips = sorted([int(i) for i in trip_dict.keys()])
+    trip_dict_keys = sorted([int(i) for i in trip_dict.keys()])
+    for trip_dict_key in trip_dict_keys:
+        current_links = link_trip_dict[str(trip_dict_key)]
+        windows = []
+        windows.append(current_links.find('window'))
+        while current_links.find('window', windows[len(windows)-1]+1) != -1:
+           windows.append(current_links.find('window', windows[len(windows)-1]+1))
+        if len(windows) == 1:
+            start = current_links.find("'")
+            stop = current_links.find("'", start+1)
+            link = current_links[start+1:stop]
+            response += '<a href="{0}" target="_blank"><h3><b>Option {1} Link</b></h3></a>'.format(link, str(trip_dict_key))
+        else:
+            last_link_start = windows[len(windows)-1]
+            last_link = current_links[last_link_start:]
+            start = last_link.find("'")
+            stop = last_link.find("'", start+1)
+            last_L = last_link[start+1:stop]
+            other_links = current_links[0: last_link_start]
+            response += '<a href="{0}" target="_blank" onclick="{1}"><h3><b>Option {2} Links</b></h3></a>'.format(last_L, other_links, str(trip_dict_key))
+
+        response += '<p>Total on-bus hours: <b>%s</b></p>' % trip_hours[str(trip_dict_key)]
+        # to sort the legs
+        legs = sorted([int(i[i.find(' ')+1:]) for i in trip_dict[str(trip_dict_key)].keys()])
+        for leg in legs:
+            the_leg = 'leg ' + str(leg)
+            response += '<p%s</p><br>' % the_leg
+            for route in trip_dict[str(trip_dict_key)][the_leg].keys():
+                first = route.find('-')
+                second = route.find('-', first+1)
+                from_c = route[0:first]
+                to_c = route[first+1:second]
+                new_route = from_c + '  ----->  ' + to_c + ' on %s' % route[second+1:]
+                response += '<p><h4><b>%s</b></h4></p>' % new_route
+                response += '<ul style="list-style-type:none;">'
+                for time, price, value in trip_dict[str(trip_dict_key)][the_leg][route]:
+                    if len(time) > 1 and len(price) > 1 and len(value) > 1:
+                        response += '<input type="radio" name="<li style="border:10px; margin:10px;"><h5>%s<p style="margin-left:10px; color:blue;">%s</p></h5></li>' % (time,price)
+                    else:
+                        response += '<li style="border:10px; margin:10px;"><h5><p style="color:red">No trips available</p></h5></li>'
+                response += '</ul>'
+            response += '<br><br>'
+        response += '<br><hr>'
+    response += '</div>'
+    return response
+
+
+
+
+
 
 def make_trip_buttons_dict(trip):
     trip_buttons_dict = {}

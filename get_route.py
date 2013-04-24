@@ -233,11 +233,13 @@ def find_times_and_price(cared_about, from_city):
     city_indices = get_locations(cared_about, from_city)
     times = {}
     prices = {}
+    IDS = {}
     times_list = []
     iteration = 1
     dep_str = ''
     arr_str = ''
     price_str = ''
+    ID_str = ''
     while len(city_indices) > 0:
         #dep_str = ''
         #arr_str = ''
@@ -267,12 +269,18 @@ def find_times_and_price(cared_about, from_city):
             if n.isdigit():
                 price_str += n
         prices[str(iteration)] = price_str 
+        id_item = cared_about[curr-8][0]
+        id_start = id_item.find('value=') + 7
+	id_end = id_item.find('"', id_start+1)
+	ID_str = id_item[id_start:id_end]
+        IDS[str(iteration)] = ID_str
         iteration += 1
         dep_str = ''
         arr_str = ''
 	price_str = ''
+        ID_str = ''
     for i in times.keys():
-        times_list.append((times[i][0] + '-' + times[i][1], prices[i]))
+        times_list.append((times[i][0] + '-' + times[i][1], prices[i], IDS[i]))
     return times_list
 
 
