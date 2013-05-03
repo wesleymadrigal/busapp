@@ -344,7 +344,8 @@ def generate_response2(trip_dict, trip_hours, link_trip_dict):
                 response += '<ul style="list-style-type:none;">'
                 for time, price, value in trip_dict[str(trip_dict_key)][the_leg][route]:
                     if len(time) > 1 and len(price) > 1 and len(value) > 1:
-                        response += '<input type="radio" name="<li style="border:10px; margin:10px;"><h5>%s<p style="margin-left:10px; color:blue;">%s</p></h5></li>' % (time,price)
+			name = 'leg%s' % str(leg)
+                        response += '<li><input type="radio" name="{0}" value="{1}"><h5><p>{2}</p><p style="margin-left:10px; color:blue;">{3}</p></h5></li>'.format(name, value, time, price)
                     else:
                         response += '<li style="border:10px; margin:10px;"><h5><p style="color:red">No trips available</p></h5></li>'
                 response += '</ul>'
